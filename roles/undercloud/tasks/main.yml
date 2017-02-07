@@ -1,0 +1,33 @@
+---
+- name: Setup latest delorean repos
+  get_url:
+    url: '{{ item.url }}'
+    dest: '{{ item.dest }}'
+    mode: 0440
+  with_items:
+    - { url: "https://trunk.rdoproject.org/centos7-{{ stack_release }}/current/delorean.repo",
+        dest: "/etc/yum.repos.d/delorean-{{ stack_release }}.repo" }
+    - { url: "http://trunk.rdoproject.org/centos7-{{ stack_release }}/delorean-deps.repo",
+        dest: "/etc/yum.repos.d/delorean-deps-{{ stack_release }}.repo" }
+    - { url: "http://buildlogs.centos.org/centos/7/cloud/x86_64/rdo-trunk-master-tripleo/delorean.repo",
+        dest: "/etc/yum.repos.d/delorean.repo" }
+
+- name: Setup ceph
+  yum:
+    name: centos-release-ceph-jewel
+    enablerepo: extras
+    state: present
+
+- name: Turn off gpg check for ceph repo
+  lineinfile:
+    dest: /etc/yum.repos.d/CentOS-Ceph-Jewel.repo
+    regexp: '^gpgcheck='
+    line: 'gpgcheck=0'
+
+- name: Install yum plugin priorities and TripleO CLI
+  yum:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - yum-plugin-priorities
+    - python-tripleoclient

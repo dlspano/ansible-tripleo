@@ -1,0 +1,6 @@
+# Host groups
+
+# Undercloud/director host
+[undercloud]
+192.168.150.25
+

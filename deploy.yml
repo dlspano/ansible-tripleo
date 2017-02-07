@@ -1,0 +1,14 @@
+---
+- name: Create stackuser
+  hosts: undercloud
+  become: true
+  user: root
+  roles:
+    - role: create-stackuser
+
+- name: Install the undercloud
+  hosts: undercloud
+  user: stack
+  become: true
+  roles:
+    - role: undercloud

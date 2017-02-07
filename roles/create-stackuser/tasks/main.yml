@@ -1,0 +1,14 @@
+---
+
+- name: Add stack user
+  user:
+    name: '{{ stack_user }}' 
+    comment: Undercloud stack user
+    password: '{{ stack_user_pass }}' 
+
+- name: Setup sudoer file
+  copy:
+    dest: /etc/sudoers.d/stack
+    src: stack.txt
+    mode: 0440
+    

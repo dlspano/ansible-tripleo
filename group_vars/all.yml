@@ -1,0 +1,4 @@
+---
+# Put the stack release here. 
+# Ex: mitaka, newton, etc.
+stack_release: newton
