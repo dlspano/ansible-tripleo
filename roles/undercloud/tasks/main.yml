@@ -31,3 +31,13 @@
   with_items:
     - yum-plugin-priorities
     - python-tripleoclient
+
+- name: Copy over undercloud.conf
+  copy:
+    dest: /home/"{{ stack_user }}"/undercloud.conf
+    src: undercloud.conf
+    mode: 0440
+
+- name: Install the undercloud
+  command: openstack undercloud install
+    chdir: '{{ stack_user_home }}'
