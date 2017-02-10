@@ -29,15 +29,24 @@
     name: '{{ item }}'
     state: present
   with_items:
-    - yum-plugin-priorities
     - python-tripleoclient
+    - vim
+    - yum-plugin-priorities
 
 - name: Copy over undercloud.conf
   copy:
-    dest: /home/"{{ stack_user }}"/undercloud.conf
+    dest: "{{ stack_user_home }}/undercloud.conf"
     src: undercloud.conf
     mode: 0440
+    owner: '{{ stack_user }}'
+    group: '{{ stack_user }}'
+
 
 - name: Install the undercloud
   command: openstack undercloud install
     chdir: '{{ stack_user_home }}'
+
+- name: Build overcloud images
+  command: openstack overcloud image build --all
+  environment:
+    DIB_YUM_REPO_CONF: "/etc/yum.repos.d/delorean*"

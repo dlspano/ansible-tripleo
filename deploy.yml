@@ -2,13 +2,13 @@
 - name: Create stackuser
   hosts: undercloud
   become: true
-  user: root
+  become_user: root
   roles:
     - role: create-stackuser
 
 - name: Install the undercloud
   hosts: undercloud
-  user: stack
   become: true
+  become_user: stack
   roles:
     - role: undercloud
