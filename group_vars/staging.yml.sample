@@ -1,0 +1,27 @@
+---
+# These are the most common undercloud.conf variables
+# You can add to these if necessary.
+# The sample values are in the template that uses these values
+# Location roles/undercloud-setup/templates/undercloud.conf
+undercloud_conf:
+  undercloud_shortname: director-01
+  undercloud_hostname: directory-01.domain.com
+  local_ip: 192.0.2.1/24
+  network_gateway: 192.0.2.1
+  undercloud_public_vip: 192.0.2.2
+  undercloud_admin_vip: 192.0.2.3
+  local_interface: eth1
+  network_cidr: 192.0.2.1/24
+  masquerade_network: 192.0.2.1/24
+  dhcp_start: 192.0.2.5
+  dhcp_end: 192.0.2.24
+  inspection_interface: br-ctlplane
+  inspection_iprange: 192.0.2.100,192.0.2.120
+  generate_service_certificate: true
+  certificate_generation_ca: local
+  inspection_enable_uefi: true
+  undercloud_debug: true
+  enable_tempest: true
+  enable_ui: true
+  enable_validations: true
+  ipxe_enabled: true

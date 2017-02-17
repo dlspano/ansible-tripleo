@@ -1,0 +1,32 @@
+---
+- name: See if stackrc exists
+  stat:
+    path: "{{ stack_user_home }}/stackrc"
+  register: stackrc
+
+- name: Install the undercloud
+  command: openstack undercloud install
+  args:
+    chdir: "{{ stack_user_home }}"
+  when: not stackrc.stat.exists|bool
+
+- name: Ensure images directory exists
+  file:
+    state: directory
+    dest: "{{ stack_user_home }}/images"
+    mode: 0755
+  when: stackrc.stat.exists|bool
+
+- name: Build overcloud images
+  command: openstack overcloud image build --all
+  args:
+    chdir: "{{ stack_user_home }}/images"
+  environment:
+    DIB_YUM_REPO_CONF: "/etc/yum.repos.d/delorean*"
+  when: stackrc.stat.exists|bool
+
+- name: Upload overcloud images
+  command: >
+    source "{{ stack_user_home }}/stackrc";
+    openstack overcloud image upload --image-path "{{ stack_user_home }}/images"
+  when: stackrc.stat.exists|bool

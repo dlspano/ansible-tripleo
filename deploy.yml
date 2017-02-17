@@ -5,10 +5,11 @@
   become_user: root
   roles:
     - role: create-stackuser
+    - role: undercloud-setup
 
 - name: Install the undercloud
   hosts: undercloud
   become: true
   become_user: stack
   roles:
-    - role: undercloud
+    - role: undercloud-install

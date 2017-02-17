@@ -1,4 +1,15 @@
 ---
+
+- name: Set hostname
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ ansible_default_ipv4.address }} {{ undercloud_hostname }}"
+    line: >
+      {{ ansible_default_ipv4.address }}
+      {{ undercloud_hostname }} {{ undercloud_shortname }}
+    when: undercloud_hostname is defined and undercloud_shortname is defined
+
+
 - name: Setup latest delorean repos
   get_url:
     url: '{{ item.url }}'
@@ -33,20 +44,10 @@
     - vim
     - yum-plugin-priorities
 
-- name: Copy over undercloud.conf
-  copy:
+- name: Setup undercloud.conf
+  template:
     dest: "{{ stack_user_home }}/undercloud.conf"
     src: undercloud.conf
     mode: 0440
     owner: '{{ stack_user }}'
     group: '{{ stack_user }}'
-
-
-- name: Install the undercloud
-  command: openstack undercloud install
-    chdir: '{{ stack_user_home }}'
-
-- name: Build overcloud images
-  command: openstack overcloud image build --all
-  environment:
-    DIB_YUM_REPO_CONF: "/etc/yum.repos.d/delorean*"
