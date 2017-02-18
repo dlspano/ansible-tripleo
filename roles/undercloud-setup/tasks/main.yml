@@ -3,11 +3,11 @@
 - name: Set hostname
   lineinfile:
     dest: /etc/hosts
-    regexp: "^{{ ansible_default_ipv4.address }} {{ undercloud_hostname }}"
+    regexp: "^{{ ansible_default_ipv4.address }} {{ undercloud_conf.undercloud_hostname }}"
     line: >
       {{ ansible_default_ipv4.address }}
-      {{ undercloud_hostname }} {{ undercloud_shortname }}
-    when: undercloud_hostname is defined and undercloud_shortname is defined
+      {{ undercloud_conf.undercloud_hostname }} {{ undercloud_conf.undercloud_shortname }}
+  when: undercloud_conf.undercloud_hostname is defined and undercloud_conf.undercloud_shortname is defined
 
 
 - name: Setup latest delorean repos
