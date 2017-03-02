@@ -4,3 +4,6 @@
 stack_release: newton
 stack_user: stack
 stack_user_home: /home/stack
+stackrc_path: "{{ stack_user_home }}/stackrc"
+ceph_release: "centos-release-ceph-jewel"
+ceph_rel
