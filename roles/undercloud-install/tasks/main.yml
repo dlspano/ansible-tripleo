@@ -1,7 +1,7 @@
 ---
 - name: See if stackrc exists
   stat:
-    path: "{{ stack_user_home }}/stackrc"
+    path: "{{ stackrc_path }}"
   register: stackrc
 
 - name: Install the undercloud
@@ -9,6 +9,13 @@
   args:
     chdir: "{{ stack_user_home }}"
   when: not stackrc.stat.exists|bool
+
+- name: Set bashrc to source stackrc file if it exists
+  lineinfile:
+    dest: "{{ stack_user_home }}/.bashrc"
+    regexp: "^source {{ stackrc_path }}"
+    line: "source {{ stackrc_path }}"
+  when: stackrc.stat.exists
 
 - name: Ensure images directory exists
   file:
@@ -27,7 +34,6 @@
 
 - name: Upload overcloud images
   shell: >
-    source "{{ stack_user_home }}/stackrc";
     openstack overcloud image upload --image-path "{{ stack_user_home }}/images"
   args:
     chdir: "{{ stack_user_home }}"
