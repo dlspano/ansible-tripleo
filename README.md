@@ -2,8 +2,8 @@
 A set of playbooks to install TripleO on a set of baremetal hosts.
 
 # Why am I doing this?
-I found alot of documentation and automation for doing virtualized deployments via RDO, etc,
-but not a lot for running vanilla TripleO on baremetal "production-like" environent. 
+I found a lot of documentation and automation for doing virtualized POC-like deployments via RDO, etc,
+but not a lot for running vanilla TripleO on baremetal a "production-like" environment. 
 
 I am currently battle-testing these playbooks against a baremetal environment where I work in our
 non-prod environment. 
