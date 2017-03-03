@@ -22,7 +22,6 @@
     state: directory
     dest: "{{ stack_user_home }}/images"
     mode: 0755
-  when: stackrc.stat.exists|bool
 
 # This task finds the yum repo file for ceph
 # based off the ceph_release variable in group_vars/all
