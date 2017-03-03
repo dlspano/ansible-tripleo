@@ -1,0 +1,7 @@
+ parameter_defaults:
+    CephStorageExtraConfig:
+      ceph::profile::params::osds:
+        '/dev/sda':
+          journal: /dev/sdc
+        '/dev/sdb':
+          journal: /dev/sdc

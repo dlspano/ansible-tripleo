@@ -1,0 +1,21 @@
+---
+- name: Copy installed overcloud heat templates to stack user home directory
+  copy:
+    src: "{{ overcloud_templates_dir }}"
+    dest: "{{ {{ stack_user_home }}/templates"
+    owner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    remote_src: true
+    mode: 0644
+
+- name: Copy Ceph wipe disk files to stack user home directory
+  synchronize:
+    src: "{{ role_path }}/files/ceph-overcloud-files/"
+    dest: "{{ stack_user_home }}/ceph-overcloud-files/"
+    owner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    archive: true
+    recursive: true
+    rsync_opts:
+      - "--chmod=F755"
+

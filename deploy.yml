@@ -14,4 +14,10 @@
   roles:
     - role: utils
     - role: undercloud-install
+
+- name: Install the overcloud
+  hosts: undercloud
+  become: true
+  become_user: stack
+  roles:
     - role: overcloud

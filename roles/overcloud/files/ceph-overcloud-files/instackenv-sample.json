@@ -1,0 +1,46 @@
+{
+    "nodes":[
+        {
+            "mac":[
+                "a1:b2:c3:d4:e5:f6"
+            ],
+            "name": "controller-1",
+            "cpu":"12",
+            "memory":"65536",
+            "disk":"228",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"admin",
+            "pm_password":"password",
+            "pm_addr":"10.1.1.10"
+        },
+        {
+            "mac":[
+                "a1:b2:c3:d4:e5:f6"
+            ],
+            "name": "compute-1",
+            "cpu":"12",
+            "memory":"65536",
+            "disk":"228",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"admin",
+            "pm_password":"password",
+            "pm_addr":"10.1.1.11"
+        },
+        {
+            "mac":[
+                "a1:b2:c3:d4:e5:f6"
+            ],
+            "name": "ceph-node-1",
+            "cpu":"12",
+            "memory":"65536",
+            "disk":"228",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"admin",
+            "pm_password":"password",
+            "pm_addr":"10.1.1.12"
+        }
+    ]
+}
