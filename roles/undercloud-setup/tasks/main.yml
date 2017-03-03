@@ -25,7 +25,7 @@
 
 - name: Setup ceph
   yum:
-    name: "{{ ceph_release }}"
+    name: "{{ ceph_yum_package }}"
     enablerepo: extras
     disable_gpg_check: true
     state: present

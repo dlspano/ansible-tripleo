@@ -24,17 +24,55 @@
     mode: 0755
   when: stackrc.stat.exists|bool
 
+# This task finds the yum repo file for ceph
+# based off the ceph_release variable in group_vars/all
+# The first letter of ceph_release (i.e jewel) is capitalized so the
+# repo file /etc/yum.repos.d/CentOS-Ceph-Jewel.repo can be found
+- name: Get Ceph Repo Conf file
+  find:
+    paths: /etc/yum/repos.d
+    patterns: "*{{ ceph_release|capitalize }}.*"
+  register: ceph_repo_conf
+
+# To build the overcloud images, we need to have the
+# right yum repo conf files in our DIB_YUM_REPO_CONF
+# bash environment variable.
+# This is reflected in the environment argument below.
 - name: Build overcloud images
   command: openstack overcloud image build --all
   args:
     chdir: "{{ stack_user_home }}/images"
   environment:
-    DIB_YUM_REPO_CONF: "/etc/yum.repos.d/delorean*"
+    DIB_YUM_REPO_CONF: "/etc/yum.repos.d/delorean* {{ ceph_repo_conf.path }}"
   when: stackrc.stat.exists|bool
 
 - name: Upload overcloud images
-  shell: >
+  command: >
     openstack overcloud image upload --image-path "{{ stack_user_home }}/images"
   args:
     chdir: "{{ stack_user_home }}"
   when: stackrc.stat.exists|bool
+
+# TripleO doesn't install a sample instackenv,json file
+# for people to reference
+- name: Give new users an instackenv.json sample file
+  copy:
+    src: instackenv-sample.json
+    dest: "{{ stack_user_home }}"
+    owner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    mode: 0644
+
+# Check to see if this if the user has already created an instackenv.json file
+- name: See if instackenv.json exists
+  stat:
+    path: "{{ stack_user_home }}/instackenv.json"
+  register: instackenv_json
+
+- name: Check to see if baremetal servers are already provisioned
+  command: "{{ scripts_dir }}/check_services.py -s"
+  register: baremetal_servers
+
+- name: Run import and provsion
+  command: "{{ scripts_dir }}/import_and_provision.sh"
+  when: instackenv_json.exists|bool and baremetal_servers.stdout|int < 0
