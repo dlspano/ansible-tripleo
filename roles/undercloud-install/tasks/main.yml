@@ -34,6 +34,16 @@
     patterns: "*{{ ceph_release|capitalize }}.*"
   register: ceph_repo_conf
 
+- name: Check to see if the overcloud images are already in glance
+  command: "{{ scripts_dir }}/check_services.py -i"
+  register: images
+
+- name: Make sure images directory exists
+  file:
+    path: "{{ stack_user_home }}/images"
+    state: directory
+    mode: 0755
+
 # To build the overcloud images, we need to have the
 # right yum repo conf files in our DIB_YUM_REPO_CONF
 # bash environment variable.
@@ -44,14 +54,14 @@
     chdir: "{{ stack_user_home }}/images"
   environment:
     DIB_YUM_REPO_CONF: "/etc/yum.repos.d/delorean* {{ ceph_repo_conf.path }}"
-  when: stackrc.stat.exists|bool
+  when: stackrc.stat.exists|bool and images.stdout|int == 0
 
 - name: Upload overcloud images
   command: >
     openstack overcloud image upload --image-path "{{ stack_user_home }}/images"
   args:
     chdir: "{{ stack_user_home }}"
-  when: stackrc.stat.exists|bool
+  when: stackrc.stat.exists|bool and images.stdout|int == 0
 
 # TripleO doesn't install a sample instackenv,json file
 # for people to reference
@@ -75,4 +85,4 @@
 
 - name: Run import and provsion
   command: "{{ scripts_dir }}/import_and_provision.sh"
-  when: instackenv_json.exists|bool and baremetal_servers.stdout|int < 0
+  when: instackenv_json.exists|bool and baremetal_servers.stdout|int == 0
