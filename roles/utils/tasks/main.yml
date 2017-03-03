@@ -1,0 +1,11 @@
+---
+- name: Synchronize utility scripts to stack user home directory
+  synchronize:
+    src: "{{ role_path }}/files/scripts/"
+    dest: "{{ stack_user_home}}/scripts/"
+    ooner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    archive: true
+    recursive: true
+    rsync_opts:
+      - "--chmod=F755"
