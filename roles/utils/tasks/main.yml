@@ -1,4 +1,10 @@
 ---
+- name: Ensure images directory exists
+  file:
+    state: directory
+    dest: "{{ stack_user_home }}/images"
+    mode: 0755
+
 - name: Synchronize utility scripts to stack user home directory
   synchronize:
     src: "{{ role_path }}/files/scripts/"
