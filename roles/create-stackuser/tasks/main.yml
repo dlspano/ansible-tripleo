@@ -2,9 +2,9 @@
 
 - name: Add stack user
   user:
-    name: '{{ stack_user }}' 
+    name: '{{ stack_user }}'
     comment: Undercloud stack user
-    password: '{{ stack_user_pass }}' 
+    password: '{{ stack_user_pass }}'
 
 - name: Setup sudoer file
   copy:
