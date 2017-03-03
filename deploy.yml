@@ -12,4 +12,6 @@
   become: true
   become_user: stack
   roles:
+    - role: utils
     - role: undercloud-install
+    - role: overcloud
