@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ntp_server=pool.ntp.org
+ntp_server={{ overcloud_ntp }}
 
 openstack overcloud deploy --templates \
   -e ~/templates/environments/puppet-pacemaker.yaml \
@@ -10,9 +10,13 @@ openstack overcloud deploy --templates \
   -e ~/templates/environments/net-bond-with-vlans.yaml \
   -e ~/custom-templates/ceph_default_disks.yaml \
   -e ~/custom-templates/ceph_wipe_env.yaml \
-  --control-scale 3 \
-  --compute-scale 2 \
-  --ceph-storage-scale 3 \
+  # Render configured variables from the overcloud_scale
+  # hash defined in the group_vars/[staging,production].yml file
+  {% for key, value in overcloud_scale.iteritems() %}
+  {% if value is defined %}
+  --{{ key }} {{ value }} \
+  {% endif %}
+  {% endfor %}
   --control-flavor control \
   --compute-flavor compute \
   --ceph-storage-flavor ceph-storage \

@@ -25,3 +25,10 @@ undercloud_conf:
   enable_ui: true
   enable_validations: true
   ipxe_enabled: true
+
+overcloud_ntp: ntp.pool.org
+
+overcloud_scale:
+  compute-scale: 3
+  control-scale: 3
+  ceph-scale: 3

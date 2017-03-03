@@ -3,9 +3,17 @@
   synchronize:
     src: "{{ role_path }}/files/scripts/"
     dest: "{{ stack_user_home}}/scripts/"
-    ooner: "{{ stack_user }}"
+    owner: "{{ stack_user }}"
     group: "{{ stack_user }}"
     archive: true
     recursive: true
     rsync_opts:
       - "--chmod=F755"
+
+- name: Copy overcloud_deploy script to stack user home directorry
+  template:
+    src: overcloud_deploy.j2
+    dest: "{{ stack_user_home}}/scripts/overcloud_deploy.sh"
+    owner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    mode: 0755
