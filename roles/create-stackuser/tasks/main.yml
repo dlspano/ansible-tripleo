@@ -11,4 +11,3 @@
     dest: /etc/sudoers.d/stack
     src: stack.txt
     mode: 0440
-    
