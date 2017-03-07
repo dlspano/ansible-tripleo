@@ -36,7 +36,7 @@ function assign_profiles() {
 
 function delete_nodes() {
   nodes=$1
-  for node in $nodes; do
+  for node in ${nodes}; do
     echo "Deleting node $node"
     openstack baremetal node delete $node;
   done
@@ -50,9 +50,9 @@ function import_nodes() {
 function introspect_nodes() {
   nodes="$1"
   echo "Setting nodes to manageable"
-  for node in $nodes;
+  for node in ${nodes};
   do
-    openstack baremetal node manage $node ;
+    openstack baremetal node manage ${node} ;
   done
   echo "Starting introspection"
   openstack overcloud node introspect --all-manageable --provide
@@ -65,20 +65,17 @@ function node_uuid_list() {
 main(){
   nodes=$(node_uuid_list)
 
-  if [ -z ${args} && ! -z ${nodes} ]; then
+  if [[ -z $args && ! -z "${nodes}" ]]; then
     for arg in ${args[@]}; do
-      if [ ${arg} == "-d" ]; then
-        delete_nodes $nodes
+      if [ $arg == "-d" ]; then
+        delete_nodes "${nodes}"
       fi
     done
   else
     echo "No nodes to delete"
   fi
 
-  if [ ! -z ${nodes} ]; then
-    # If the user specified to delete the nodes, delete them if they exist
-    echo "Nodes already exist. Nothing to do."
-  else
+  if [ -z "${nodes}" ]; then
     import_nodes
     introspect_nodes $(nodes)
     assign_profiles
