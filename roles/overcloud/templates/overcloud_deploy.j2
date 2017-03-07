@@ -10,13 +10,18 @@ openstack overcloud deploy --templates \
   -e ~/templates/environments/net-bond-with-vlans.yaml \
   -e ~/custom-templates/ceph_default_disks.yaml \
   -e ~/custom-templates/ceph_wipe_env.yaml \
+{% if user_templates.files is defined %}
+{% for file in user_templates.files %}
+  -e {{ file.path }} \
+{% endfor %}
+{% endif %}
   # Render configured variables from the overcloud_scale
   # hash defined in the group_vars/[staging,production].yml file
-  {% for key, value in overcloud_scale.iteritems() %}
-  {% if value is defined %}
+{% for key, value in overcloud_scale.iteritems() %}
+{% if value is defined %}
   --{{ key }} {{ value }} \
-  {% endif %}
-  {% endfor %}
+{% endif %}
+{% endfor %}
   --control-flavor control \
   --compute-flavor compute \
   --ceph-storage-flavor ceph-storage \

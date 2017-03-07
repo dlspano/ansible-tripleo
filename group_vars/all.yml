@@ -4,9 +4,11 @@
 stack_release: newton
 stack_user: stack
 stack_user_home: /home/stack
+stack_user_files: "{{ stack_user_home }}/user-files"
+stack_user_templates: "{{ stack_user_home }}/templates/user-templates"
 stackrc_path: "{{ stack_user_home }}/stackrc"
 scripts_path: "{{ stack_user_home }}/scripts"
 ceph_release: jewel
 ceph_yum_package: "centos-release-ceph-{{ ceph_release }}"
 overcloudrc_path: "{{ stack_user_home }}/overcloudrc"
-overcloud_templates_dir: /usr/share/openstack-tripleo-heat-templates
+overcloud_templates_dir: /usr/share/openstack-tripleo-heat-templates/

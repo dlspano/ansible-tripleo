@@ -1,19 +1,9 @@
 ---
 
-# TripleO doesn't install a sample instackenv,json file
-# for people to reference
-- name: Give new users an instackenv.json sample file
-  copy:
-    src: instackenv-sample.json
-    dest: "{{ stack_user_home }}"
-    owner: "{{ stack_user }}"
-    group: "{{ stack_user }}"
-    mode: 0644
-
 # Check to see if this if the user has already created an instackenv.json file
 - name: See if instackenv.json exists
   stat:
-    path: "{{ stack_user_home }}/instackenv.json"
+    path: "{{ stack_user_files }}/instackenv.json"
   register: instackenv_json
 
 
@@ -22,20 +12,24 @@
     source {{ stack_user_home }}/stackrc;
     {{ scripts_path }}/import_and_provision.sh
   when: instackenv_json.stat.exists|bool
-- name: Ensure templates directory exists
-  file:
-    state: directory
-    dest: "{{ stack_user_home }}/templates"
-    mode: 0644
 
 - name: Copy installed overcloud heat templates to stack user home directory
   synchronize:
-    src: "{{ overcloud_templates_dir }}"
+    src: "{{ overcloud_templates_dir }}/"
     dest: "{{ stack_user_home }}/templates/"
     mode: pull
     archive: true
     recursive: true
   delegate_to: "{{ inventory_hostname }}"
+  become: true
+  become_user: root
+
+- name: Set overcloud heat templates directory permissions
+  file:
+    path: "{{ stack_user_home }}/templates/"
+    owner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    recurse: true
   become: true
   become_user: root
 
@@ -48,6 +42,29 @@
     rsync_opts:
       - "--chmod=F755"
 
+- name: Synchronize user-templates to stack user home directory
+  synchronize:
+    src: "{{ role_path }}/files/user-templates/"
+    dest: "{{ stack_user_templates }}"
+    archive: true
+    recursive: true
+    rsync_opts:
+      - "--chmod=F755"
+
+- name: Get list of user templates for deploy script
+  find:
+    path: "{{ stack_user_templates }}"
+    patterns: "*.yaml, *.yml"
+  register: user_templates
+
+- name: Copy overcloud_deploy script to stack user home directory
+  template:
+    src: overcloud_deploy.j2
+    dest: "{{ stack_user_home}}/scripts/overcloud_deploy.sh"
+    owner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    mode: 0755
+
 - name: See if overcloudrc exists
   stat:
     path: "{{ stackrc_path }}"
@@ -59,3 +76,11 @@
     {{ scripts_path }}/check_services.py -s orchestration
   register: overcloud
   when: stackrc.stat.exists
+
+- name: Copy overcloud_deploy script to stack user home directory
+  template:
+    src: overcloud_deploy.j2
+    dest: "{{ stack_user_home}}/scripts/overcloud_deploy.sh"
+    owner: "{{ stack_user }}"
+    group: "{{ stack_user }}"
+    mode: 0755
