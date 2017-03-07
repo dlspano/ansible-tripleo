@@ -8,9 +8,7 @@
 - name: Synchronize utility scripts to stack user home directory
   synchronize:
     src: "{{ role_path }}/files/scripts/"
-    dest: "{{ stack_user_home}}/scripts/"
-    owner: "{{ stack_user }}"
-    group: "{{ stack_user }}"
+    dest: "{{ stack_user_home }}/scripts/"
     archive: true
     recursive: true
     rsync_opts:
