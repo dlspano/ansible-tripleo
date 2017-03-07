@@ -3,6 +3,11 @@
 # and assigns the nodes to profiles
 
 # Declare global variables
+# Setup instackenv.json file path
+instackenv_path=$HOME/user-files/instackenv.json
+if [ ! -f "$instackenv_path" ]; then
+  instackenv_path=$HOME/instackenv.json
+fi
 args=( "$@" )
 args_length=${#args[@]}
 
@@ -43,7 +48,7 @@ function delete_nodes() {
 }
 
 function import_nodes() {
-  openstack baremetal import --json ~/instackenv.json
+  openstack baremetal import --json
   openstack baremetal configure boot
 }
 
