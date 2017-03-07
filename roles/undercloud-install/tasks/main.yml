@@ -34,7 +34,9 @@
   register: ceph_repo_conf
 
 - name: Check to see if the overcloud images are already in glance
-  command: "{{ scripts_dir }}/check_services.py -i"
+  shell: >
+    source {{ stack_user_home }}/stackrc;
+    {{ scripts_path }}/check_services.py -s image
   register: images
 
 - name: Make sure images directory exists
@@ -56,8 +58,9 @@
   when: stackrc.stat.exists|bool and images.stdout|int == 0
 
 - name: Upload overcloud images
-  command: >
-    openstack overcloud image upload --image-path "{{ stack_user_home }}/images"
+  shell: >
+    source {{ stack_user_home }}/stackrc;
+    openstack overcloud image upload --image-path {{ stack_user_home }}/images
   args:
     chdir: "{{ stack_user_home }}"
   when: stackrc.stat.exists|bool and images.stdout|int == 0
@@ -78,10 +81,9 @@
     path: "{{ stack_user_home }}/instackenv.json"
   register: instackenv_json
 
-- name: Check to see if baremetal servers are already provisioned
-  command: "{{ scripts_dir }}/check_services.py -s"
-  register: baremetal_servers
 
 - name: Run import and provsion
-  command: "{{ scripts_dir }}/import_and_provision.sh"
-  when: instackenv_json.exists|bool and baremetal_servers.stdout|int == 0
+  shell: >
+    source {{ stack_user_home }}/stackrc;
+    {{ scripts_path }}/import_and_provision.sh
+  when: instackenv_json.stat.exists|bool
