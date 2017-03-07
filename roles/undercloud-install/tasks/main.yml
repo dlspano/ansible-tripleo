@@ -65,25 +65,4 @@
     chdir: "{{ stack_user_home }}"
   when: stackrc.stat.exists|bool and images.stdout|int == 0
 
-# TripleO doesn't install a sample instackenv,json file
-# for people to reference
-- name: Give new users an instackenv.json sample file
-  copy:
-    src: instackenv-sample.json
-    dest: "{{ stack_user_home }}"
-    owner: "{{ stack_user }}"
-    group: "{{ stack_user }}"
-    mode: 0644
 
-# Check to see if this if the user has already created an instackenv.json file
-- name: See if instackenv.json exists
-  stat:
-    path: "{{ stack_user_home }}/instackenv.json"
-  register: instackenv_json
-
-
-- name: Run import and provsion
-  shell: >
-    source {{ stack_user_home }}/stackrc;
-    {{ scripts_path }}/import_and_provision.sh
-  when: instackenv_json.stat.exists|bool

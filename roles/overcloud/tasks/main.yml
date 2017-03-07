@@ -1,21 +1,61 @@
 ---
-- name: Copy installed overcloud heat templates to stack user home directory
+
+# TripleO doesn't install a sample instackenv,json file
+# for people to reference
+- name: Give new users an instackenv.json sample file
   copy:
-    src: "{{ overcloud_templates_dir }}"
-    dest: "{{ {{ stack_user_home }}/templates"
+    src: instackenv-sample.json
+    dest: "{{ stack_user_home }}"
     owner: "{{ stack_user }}"
     group: "{{ stack_user }}"
-    remote_src: true
     mode: 0644
+
+# Check to see if this if the user has already created an instackenv.json file
+- name: See if instackenv.json exists
+  stat:
+    path: "{{ stack_user_home }}/instackenv.json"
+  register: instackenv_json
+
+
+- name: Run import and provsion
+  shell: >
+    source {{ stack_user_home }}/stackrc;
+    {{ scripts_path }}/import_and_provision.sh
+  when: instackenv_json.stat.exists|bool
+- name: Ensure templates directory exists
+  file:
+    state: directory
+    dest: "{{ stack_user_home }}/templates"
+    mode: 0644
+
+- name: Copy installed overcloud heat templates to stack user home directory
+  synchronize:
+    src: "{{ overcloud_templates_dir }}"
+    dest: "{{ stack_user_home }}/templates/"
+    mode: pull
+    archive: true
+    recursive: true
+  delegate_to: "{{ inventory_hostname }}"
+  become: true
+  become_user: root
 
 - name: Copy Ceph wipe disk files to stack user home directory
   synchronize:
     src: "{{ role_path }}/files/ceph-overcloud-files/"
     dest: "{{ stack_user_home }}/ceph-overcloud-files/"
-    owner: "{{ stack_user }}"
-    group: "{{ stack_user }}"
     archive: true
     recursive: true
     rsync_opts:
       - "--chmod=F755"
 
+- name: See if overcloudrc exists
+  stat:
+    path: "{{ stackrc_path }}"
+  register: stackrc
+
+- name: Check to see if the overcloud is already provisioned
+  shell: >
+    source {{ stackrc_path }};
+    {{ scripts_path }}/check_services.py -s orchestration
+  register: overcloud
+  when: stackrc.stat.exists
