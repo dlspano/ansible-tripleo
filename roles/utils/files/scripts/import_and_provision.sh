@@ -48,7 +48,7 @@ function delete_nodes() {
 }
 
 function import_nodes() {
-  openstack baremetal import --json
+  openstack baremetal import --json $instackenv_path
   openstack baremetal configure boot
 }
 
