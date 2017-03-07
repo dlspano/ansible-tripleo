@@ -9,7 +9,8 @@ LOG = logging.getLogger(__name__)
 
 # Service and its corresponding openstack sdk generator
 SERVICES = {'image': 'images',
-            'compute': 'servers'}
+            'compute': 'servers',
+            'orchestration': 'stacks'}
 
 
 def get_credentials():
@@ -22,7 +23,10 @@ def get_credentials():
     creds['username'] = os.environ['OS_USERNAME']
     creds['password'] = os.environ['OS_PASSWORD']
     creds['auth_url'] = os.environ['OS_AUTH_URL']
-    creds['project_name'] = os.environ['OS_TENANT_NAME']
+    if os.environ.get('OS_TENANT_NAME', False):
+        creds['project_name'] = os.environ['OS_TENANT_NAME']
+    else:
+        creds['project_name'] = os.environ['OS_PROJECT_NAME']
     return creds
 
 
@@ -58,7 +62,8 @@ def main():
         '-v', '--verbose', action='count', default=0,
         help="Increase verbosity (specify multiple times for more)")
     parser.add_argument(
-        '-s', '--service', action='store', choices=['image', 'compute'],
+        '-s', '--service', action='store', choices=['image', 'compute',
+                                                    'orchestration'],
         default='image', help="Specify a service to check")
     args = parser.parse_args()
 
@@ -71,11 +76,9 @@ def main():
     credentials = get_credentials()
     conn = connection.Connection(**credentials)
     list_method = SERVICES[args.service]
-    exit_code = 0
-    is_installed = (check_assets(conn, args.service, list_method))
-    if is_installed:
-        exit_code = 1
-    sys.exit(exit_code)
+    count = (check_assets(conn, args.service, list_method))
+    # Use print so count goes to stdout for ansible
+    print(count)
 
 if __name__ == '__main__':
     main()
